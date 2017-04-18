@@ -1,0 +1,7 @@
+data/
+logs/
+model/
+vir/
+python/
+*.pyc
+**/__pycache__

@@ -1,8 +1,8 @@
 {
   "model": "C3D",
   "nb_samples": 500,
-  "percent_of_test": 0.80,
-  "batch_size": 30,
+  "percent_of_test": 0.10,
+  "batch_size": 10,
   "nb_epochs": 1000,
   "platform": "ceca",
   "root":{

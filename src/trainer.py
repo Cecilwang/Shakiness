@@ -22,7 +22,8 @@ class Trainer(object):
         if 'ckpt' in callbacks_set:
             callbacks.append(ModelCheckpoint(
                 filepath=self.ckpts_dir + self.model_proxy.name + '/' +\
-                    '{epoch:03d}-{val_loss:.3f}.hdf5',
+                    '{epoch:03d}-{loss:.3f}.hdf5',
+                monitor='loss',
                 verbose=1,
                 save_best_only=True
             ))
@@ -43,13 +44,24 @@ class Trainer(object):
 
         return callbacks
 
-    def train(self, batch_size, nb_epochs, callbacks_set):
-        self.model_proxy.model.fit_generator(
-            generator=self.dataset.generator('train', batch_size),
-            steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
-            epochs=nb_epochs,
-            verbose=2,
-            callbacks=self.get_callbacks(callbacks_set),
-            validation_data=self.dataset.generator('test', batch_size),
-            validation_steps=self.dataset.nb_samples['test']//batch_size,
-        )
+    def train(self, batch_size, nb_epochs, callbacks_set, initial_epoch, val):
+        if val==True:
+            self.model_proxy.model.fit_generator(
+                generator=self.dataset.generator('train', batch_size),
+                steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
+                epochs=nb_epochs,
+                verbose=2,
+                callbacks=self.get_callbacks(callbacks_set),
+                initial_epoch=initial_epoch,
+                validation_data=self.dataset.generator('test', batch_size),
+                validation_steps=self.dataset.nb_samples['test']//batch_size,
+            )
+        else:
+            self.model_proxy.model.fit_generator(
+                generator=self.dataset.generator('train', batch_size),
+                steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
+                epochs=nb_epochs,
+                verbose=2,
+                callbacks=self.get_callbacks(callbacks_set),
+                initial_epoch=initial_epoch,
+            )

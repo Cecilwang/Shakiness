@@ -5,3 +5,4 @@ vir/
 python/
 *.pyc
 **/__pycache__
+nohup

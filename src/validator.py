@@ -2,8 +2,9 @@
 
 import numpy as np
 from scipy.stats import spearmanr
+import matplotlib.pyplot as plt
 
-class validator(object):
+class Validator(object):
 
     model_proxy = None
     dataset = None
@@ -16,6 +17,10 @@ class validator(object):
         return spearmanr(x, y)[0]
 
     def accuracy(self, x, y, delta):
+        sub = np.absolute(x-y)
+        plt.plot(sub)
+        plt.ylabel('sub')
+        plt.show()
         return np.mean(np.absolute(x-y)<delta)
 
     def cal_score(self, scores):
@@ -27,7 +32,7 @@ class validator(object):
         y = []
         for video in videos:
             data, _ = self.dataset.load_samples_from_video(video)
-            scores = predict(data, batch_size=data.shape[0], verbose=1)
+            scores = self.model_proxy.model.predict(data, batch_size=data.shape[0], verbose=1)
             x.append(self.cal_score(scores))
             y.append(video[1])
         x = np.array(x)

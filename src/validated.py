@@ -3,11 +3,11 @@
 from settings import Settings
 from data import Dataset
 from model import ModelProxy
-from trainer import Trainer
+from validator import Validator
 
 
 if __name__ == '__main__':
-    '''
+
     model_proxy = ModelProxy(
         Settings().model,
         (
@@ -18,7 +18,6 @@ if __name__ == '__main__':
         ),
         saved_model=Settings().models_dir + Settings().model + '/669-2.259-0.2.hdf5'
     )
-    '''
 
     dataset = Dataset(
         Settings().nb_samples,
@@ -26,3 +25,7 @@ if __name__ == '__main__':
         Settings().scores_xlsx,
         Settings().percent_of_test,
     )
+
+    validator = Validator(model_proxy, dataset)
+
+    validator.validate('test')

@@ -1,8 +1,8 @@
-data/
-logs/
-model/
-vir/
-python/
+/data/
+/logs/
+/model/
+/vir/
+/python/
 *.pyc
 **/__pycache__
 nohup

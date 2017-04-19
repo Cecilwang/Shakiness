@@ -35,5 +35,5 @@ if __name__ == '__main__':
         Settings().nb_epochs,
         set(Settings().callbacks_set),
         0,
-        True
+        False
     )

@@ -47,18 +47,18 @@ class Trainer(object):
     def train(self, batch_size, nb_epochs, callbacks_set, initial_epoch, val):
         if val==True:
             self.model_proxy.model.fit_generator(
-                generator=self.dataset.generator('train', batch_size),
+                generator=self.dataset.generator('train', batch_size, cut=True),
                 steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
                 epochs=nb_epochs,
                 verbose=2,
                 callbacks=self.get_callbacks(callbacks_set),
                 initial_epoch=initial_epoch,
-                validation_data=self.dataset.generator('test', batch_size),
+                validation_data=self.dataset.generator('test', batch_size, cut=False),
                 validation_steps=self.dataset.nb_samples['test']//batch_size,
             )
         else:
             self.model_proxy.model.fit_generator(
-                generator=self.dataset.generator('train', batch_size),
+                generator=self.dataset.generator('train', batch_size, cut=True),
                 steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
                 epochs=nb_epochs,
                 verbose=2,

@@ -66,6 +66,7 @@ class Dataset(object):
     clips = None
     overlap = None
     gap = None
+    nb_train_buckets = []
     videos = []
     video_queues = dict()
     frames = None
@@ -148,11 +149,14 @@ class Dataset(object):
             nb = max(1, round(len(bucket)*percent_of_test))
             self.nb_test += nb
             self.nb_train += len(bucket)-nb
+            self.nb_train_buckets.append(len(bucket)-nb)
             test_videos += bucket[:nb]
             train_videos += bucket[nb:]
         assert len(test_videos) == self.nb_test
         assert len(train_videos) == self.nb_train
         assert len(test_videos)+len(train_videos) == len(self.videos)
+        self.nb_train_buckets = [min(1.0, self.nb_train_buckets[len(self.nb_train_buckets)-1]/x) for x in self.nb_train_buckets]
+        utilities.draw.draw([self.nb_train_buckets])
 
         self.video_queues['test'] = VideoQueue(test_videos)
         self.nb_samples['test'] = self.get_nb_samples(
@@ -164,23 +168,33 @@ class Dataset(object):
             self.video_queues['train'].videos
         )
 
+
     def get_nb_samples(self, videos):
         nb_samples = 0
+        tmp = [0,0,0,0,0,0,0,0,0,0,0]
         for video in videos:
             nb_frames = self.frames[video[0]]
             nb_frames = len(range(0, nb_frames, 1+self.gap))
             nb_frames = nb_frames - (nb_frames % self.clips) - 1
             stride = int(self.clips - self.clips * self.overlap)
             stride = 1 if stride == 0 else stride
-            nb_samples += len(range(0, nb_frames, stride))
+            nb_samples += round(len(range(0, nb_frames, stride))*self.nb_train_buckets[int(video[1]/10)])
+            tmp[int(video[1]/10)] += round(len(range(0, nb_frames, stride))*self.nb_train_buckets[int(video[1]/10)])
+        print(tmp)
+        utilities.draw.draw([tmp])
         return nb_samples
 
-    def load_samples_from_video(self, video):
+    def load_samples_from_video(self, video, cut=False):
         data = utilities.video.load_video_from_images(
             video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
+        if cut==True:
+            index = np.arange(data.shape[0])
+            np.random.shuffle(index)
+            index = index[:round(index.shape[0]*self.nb_train_buckets[int(video[1]/10)])]
+            data = data[index]
         return data, np.full((data.shape[0]), np.round(video[1]), dtype=np.float32)
 
-    def generator(self, video_queue, nb):
+    def generator(self, video_queue, nb, cut):
         video_queue = self.video_queues[video_queue]
         while True:
             while video_queue.nb_buffer < nb:

@@ -2,7 +2,7 @@
 
 import numpy as np
 from scipy.stats import spearmanr
-import matplotlib.pyplot as plt
+import utilities
 
 class Validator(object):
 
@@ -23,24 +23,20 @@ class Validator(object):
     def cal_score(self, scores):
         return np.mean(scores)
 
-    def draw(self, values):
-        for x in values:
-            plt.plot(x)
-        #plt.show()
-
     def validate(self, set, delta=0.5):
         videos = self.dataset.video_queues[set].videos
         x = []
         y = []
         for video in videos:
             print(video[0])
-            data, _ = self.dataset.load_samples_from_video(video)
+            data, _ = self.dataset.load_samples_from_video(video, cut=False)
             scores = self.model_proxy.model.predict(data, batch_size=data.shape[0], verbose=1)
             x.append(self.cal_score(scores))
-            self.draw([scores,
-                       np.full((scores.shape[0]), video[1]),
-                       np.full((scores.shape[0]), self.cal_score(scores)),
-                      ])
+            utilities.draw.draw(
+                [scores,
+                 np.full((scores.shape[0]), video[1]),
+                 np.full((scores.shape[0]), self.cal_score(scores)),]
+            )
             y.append(video[1])
         x = np.array(x)
         y = np.array(y)

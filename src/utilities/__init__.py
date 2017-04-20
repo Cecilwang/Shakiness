@@ -5,3 +5,4 @@ from utilities import singleton
 from utilities import video
 from utilities import xlsx
 from utilities import decorator
+from utilities import draw

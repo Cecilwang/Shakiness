@@ -65,6 +65,7 @@ class Dataset(object):
     height = None
     clips = None
     overlap = None
+    gap = None
     videos = []
     video_queues = dict()
     frames = None
@@ -79,6 +80,7 @@ class Dataset(object):
         self.height = videos_description['resize_height']
         self.clips = videos_description['nb_frames_of_clip']
         self.overlap = videos_description['overlap']
+        self.gap = videos_description['gap']
         self.image_mode = IMAGE_MODES[videos_description['image_mode']]
 
         print('Loading scores file.')
@@ -166,6 +168,7 @@ class Dataset(object):
         nb_samples = 0
         for video in videos:
             nb_frames = self.frames[video[0]]
+            nb_frames = len(range(0, nb_frames, 1+self.gap))
             nb_frames = nb_frames - (nb_frames % self.clips) - 1
             stride = int(self.clips - self.clips * self.overlap)
             stride = 1 if stride == 0 else stride
@@ -174,7 +177,7 @@ class Dataset(object):
 
     def load_samples_from_video(self, video):
         data = utilities.video.load_video_from_images(
-            video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode)
+            video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
         return data, np.full((data.shape[0]), np.round(video[1]), dtype=np.float32)
 
     def generator(self, video_queue, nb):

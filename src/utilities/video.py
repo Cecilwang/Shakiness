@@ -96,8 +96,9 @@ def play_video_from_images(video_dir, mode):
     play_video_from_array(data)
 
 
-def load_video_from_images(video_dir, size=None, clips=None, overlap=0.0, mode=-1):
+def load_video_from_images(video_dir, size=None, clips=None, overlap=0.0, mode=-1, gap=0):
     image_files = ls_sorted_dir(video_dir)
+    image_files = [image_files[i] for i in range(0, len(image_files), 1+gap)]
 
     if size == None:
         data = [cv2.imread(x, mode) for x in image_files]

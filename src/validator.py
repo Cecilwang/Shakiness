@@ -18,22 +18,29 @@ class Validator(object):
 
     def accuracy(self, x, y, delta):
         sub = np.absolute(x-y)
-        plt.plot(sub)
-        plt.ylabel('sub')
-        plt.show()
         return np.mean(np.absolute(x-y)<delta)
 
     def cal_score(self, scores):
         return np.mean(scores)
+
+    def draw(self, values):
+        for x in values:
+            plt.plot(x)
+        #plt.show()
 
     def validate(self, set, delta=0.5):
         videos = self.dataset.video_queues[set].videos
         x = []
         y = []
         for video in videos:
+            print(video[0])
             data, _ = self.dataset.load_samples_from_video(video)
             scores = self.model_proxy.model.predict(data, batch_size=data.shape[0], verbose=1)
             x.append(self.cal_score(scores))
+            self.draw([scores,
+                       np.full((scores.shape[0]), video[1]),
+                       np.full((scores.shape[0]), self.cal_score(scores)),
+                      ])
             y.append(video[1])
         x = np.array(x)
         y = np.array(y)

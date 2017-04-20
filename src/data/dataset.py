@@ -156,6 +156,7 @@ class Dataset(object):
         self.nb_samples['test'] = self.get_nb_samples(
             self.video_queues['test'].videos
         )
+        random.shuffle(train_videos)
         self.video_queues['train'] = VideoQueue(train_videos)
         self.nb_samples['train'] = self.get_nb_samples(
             self.video_queues['train'].videos
@@ -174,7 +175,7 @@ class Dataset(object):
     def load_samples_from_video(self, video):
         data = utilities.video.load_video_from_images(
             video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode)
-        return data, np.full((data.shape[0]), video[1], dtype=np.float32)
+        return data, np.full((data.shape[0]), np.round(video[1]), dtype=np.float32)
 
     def generator(self, video_queue, nb):
         video_queue = self.video_queues[video_queue]

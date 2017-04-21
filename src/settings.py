@@ -1,6 +1,8 @@
 # Author: Cecil Wang (cecilwang@126.com)
 
 import json
+import platform
+
 import utilities
 
 class Settings(metaclass=utilities.singleton.SingletonMetaClass):
@@ -17,7 +19,7 @@ class Settings(metaclass=utilities.singleton.SingletonMetaClass):
         with open(settings_path) as settings_file:
             settings = json.load(settings_file)
 
-        root = settings['root'][settings['platform']]
+        root = settings['root'][platform.system()]
 
         for k, v in settings.items():
             if isinstance(v, dict):

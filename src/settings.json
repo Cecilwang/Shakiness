@@ -4,10 +4,9 @@
   "percent_of_test": 0.10,
   "batch_size": 10,
   "nb_epochs": 1000,
-  "platform": "ceca",
   "root":{
-      "win": "D:/Project/Shakiness/",
-      "ceca": "/home/wsx/shakiness/"
+      "Windows": "D:/Project/shakiness/",
+      "Linux": "/home/wsx/shakiness/"
   },
   "videos_description": {
       "raw_dir": "data/video/raw/",
@@ -19,16 +18,20 @@
       "nb_frames_of_clip": 16,
       "resize_height": 112,
       "resize_width": 112,
-      "overlap": 0.0
+      "overlap": 0.0,
+      "gap": 1
   },
   "scores_xlsx": {
-    "file_path": "data/scores.xlsx",
-    "start_cell": "V3",
-    "end_cell": "V502"
+      "file_path": "data/scores.xlsx",
+      "start_cell": "V3",
+      "end_cell": "V502"
   },
   "callbacks_set": ["ckpt", "tb", "csv"],
   "ckpts_dir": "model/",
   "logs_dir": "logs/",
   "models_dir": "model/",
-  "preC3D_path": "data/preC3D/preC3D.model"
+  "preC3D_path": "data/preC3D/preC3D.model",
+  "svr": {
+      "file_path": "model/svr/svr.npy"
+  }
 }

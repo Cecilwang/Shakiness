@@ -30,6 +30,7 @@ class Validator(object):
         x = []
         y = []
         for video in videos:
+            print(video[0])
             data, _ = self.dataset.load_samples_from_video(video, cut=False)
             if tool == 'model':
                 scores = self.model_proxy.model.predict(data, batch_size=data.shape[0], verbose=1)

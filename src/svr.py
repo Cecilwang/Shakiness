@@ -16,15 +16,20 @@ class MySVR(object):
             self.svr = SVR(kernel=kernel)
 
     def fit(self, model_proxy, dataset):
+        x = np.array([]).reshape(0, 4096)
+        y = np.array([])
         videos = dataset.video_queues['train'].videos
         for video in videos:
+            print(video[0])
             data, scores = dataset.load_samples_from_video(video, cut=False)
             features = model_proxy.features([data, 0])[0]
-            self.svr.fit(features, scores)
+            x = np.vstack([x, features])
+            y = np.concatenate([y, scores])
+        self.svr.fit(x, y)
 
     def predict(self, model_proxy, data):
-        features = self.model_proxy.features([data, 0])[0]
-        self.svr.predict(features)
+        features = model_proxy.features([data, 0])[0]
+        return self.svr.predict(features)
 
     def save(self, filepath):
         pickle.dump(self.svr, open(filepath, 'wb'))

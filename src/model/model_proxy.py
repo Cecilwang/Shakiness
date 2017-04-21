@@ -27,9 +27,10 @@ class ModelProxy(object):
         elif name == 'C3D':
             print("Create C3D model.")
             self.model = C3D().create(input_shape)
-            input = self.model.input
-            output = self.model.layers[20].output
-            self.features = K.function([input]+ [K.learning_phase()], [output])
+
+        input = self.model.input
+        output = self.model.layers[20].output
+        self.features = K.function([input]+ [K.learning_phase()], [output])
 
         self.model.compile(loss='mse', optimizer='adadelta',
                            metrics=['accuracy'])

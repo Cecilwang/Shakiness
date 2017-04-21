@@ -41,7 +41,7 @@ if __name__ == '__main__':
             Settings().videos_description['resize_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
-        #saved_model=Settings().models_dir + Settings().model + '/669-2.259.hdf5'
+        saved_model=Settings().models_dir + Settings().model + '/859-5.150.hdf5'
     )
 
     dataset = Dataset(

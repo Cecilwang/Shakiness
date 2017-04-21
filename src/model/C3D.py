@@ -73,6 +73,7 @@ class C3D(metaclass=utilities.singleton.SingletonMetaClass):
         model.add(self.maxpool_3d(2, 2))
 
         model.add(Flatten())
+
         model.add(self.fc(1024))
         model.add(BatchNormalization())
         model.add(Activation('relu'))

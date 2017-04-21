@@ -12,6 +12,7 @@ class ModelProxy(object):
     name = None
     model = None
     input_shape = None
+    features = None
 
     def my_acc(self, y_true, y_pred):
         return K.mean(K.equal(y_true, K.round(y_pred)))
@@ -26,6 +27,9 @@ class ModelProxy(object):
         elif name == 'C3D':
             print("Create C3D model.")
             self.model = C3D().create(input_shape)
+            input = self.model.input
+            output = self.model.layers[20].output
+            self.features = K.function([input]+ [K.learning_phase()], [output])
 
         self.model.compile(loss='mse', optimizer='adadelta',
                            metrics=['accuracy'])

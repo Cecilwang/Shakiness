@@ -192,7 +192,7 @@ class Dataset(object):
             np.random.shuffle(index)
             index = index[:round(index.shape[0]*self.nb_train_buckets[int(video[1]/10)])]
             data = data[index]
-        return data, np.full((data.shape[0]), np.round(video[1]), dtype=np.float32)
+        return data, np.full((data.shape[0]), video[1], dtype=np.float32)
 
     def generator(self, video_queue, nb, cut):
         video_queue = self.video_queues[video_queue]

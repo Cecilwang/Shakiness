@@ -11,7 +11,7 @@ class MySVR(object):
 
     def __init__(self, kernel='rbf', saved_svr=None):
         if saved_svr != None:
-            self.svr = pickle.loads(saved_svr)
+            self.svr = pickle.load(open(saved_svr, 'rb'))
         else:
             self.svr = SVR(kernel=kernel)
 
@@ -27,4 +27,4 @@ class MySVR(object):
         self.svr.predict(features)
 
     def save(self, filepath):
-         pickle.dumps(self.svr)
+        pickle.dump(self.svr, open(filepath, 'wb'))

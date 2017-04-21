@@ -5,6 +5,7 @@ import tensorflow as tf
 from settings import Settings
 from data import Dataset
 from model import ModelProxy
+from svr import MySVR
 from validator import Validator
 
 
@@ -22,7 +23,7 @@ if __name__ == '__main__':
             Settings().videos_description['resize_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
-        saved_model=Settings().models_dir + Settings().model + '/790-6.526.hdf5'
+        saved_model=Settings().models_dir + Settings().model + '/859-5.150.hdf5'
     )
 
     svr = MySVR(saved_svr=Settings().svr['file_path'])
@@ -34,7 +35,7 @@ if __name__ == '__main__':
         Settings().percent_of_test,
     )
 
-    validator = Validator(model_proxy, dataset)
+    validator = Validator(model_proxy, dataset, svr)
 
     validator.validate(FLAGS.witch, 'test', 5)
     validator.validate(FLAGS.witch, 'train', 5)

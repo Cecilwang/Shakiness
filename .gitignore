@@ -3,6 +3,7 @@
 /model/
 /vir/
 /python/
+/images/
 *.pyc
 **/__pycache__
 nohup

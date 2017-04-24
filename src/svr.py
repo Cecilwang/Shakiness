@@ -21,10 +21,16 @@ class MySVR(object):
         videos = dataset.video_queues['train'].videos
         for video in videos:
             print(video[0])
-            data, scores = dataset.load_samples_from_video(video, cut=False)
-            features = model_proxy.features([data, 0])[0]
-            x = np.vstack([x, features])
-            y = np.concatenate([y, scores])
+            data, scores = dataset.load_samples_from_video(video, cut=True)
+            while data.shape[0] > 0:
+                tail = min(data.shape[0], 20)
+                data_t = data[:tail, :, :, :]
+                data = data[tail:data.shape[0], :, :, :]
+                scores_t = scores[:tail]
+                scores = scores[tail:scores.shape[0]]
+                features = model_proxy.features([data_t, 0])[0]
+                x = np.vstack([x, features])
+                y = np.concatenate([y, scores_t])
         self.svr.fit(x, y)
 
     def predict(self, model_proxy, data):

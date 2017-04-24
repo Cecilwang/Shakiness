@@ -33,5 +33,6 @@
   "preC3D_path": "data/preC3D/preC3D.model",
   "svr": {
       "file_path": "model/svr/svr.npy"
-  }
+  },
+  "features_dim": 4096
 }

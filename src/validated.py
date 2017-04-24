@@ -26,7 +26,7 @@ if __name__ == '__main__':
         saved_model=Settings().models_dir + Settings().model + '/859-5.150.hdf5'
     )
 
-    svr = MySVR(saved_svr=Settings().svr['file_path'])
+    svr = MySVR(Settings().features_dim, saved_svr=Settings().svr['file_path'])
 
     dataset = Dataset(
         Settings().nb_samples,

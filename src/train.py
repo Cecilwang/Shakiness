@@ -27,7 +27,7 @@ def train_model(model_proxy, dataset):
     )
 
 def train_svr(model_proxy, dataset):
-    svr = MySVR()
+    svr = MySVR(Settings().features_dim)
     svr.fit(model_proxy, dataset)
     svr.save(Settings().svr['file_path'])
 

@@ -215,7 +215,6 @@ class Dataset(object):
         else:
             data = utilities.video.load_video_from_images(
                 video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
-
         return data, np.full((data.shape[0]), video[1], dtype=np.float32)
 
     def generator(self, video_queue, nb, cut):

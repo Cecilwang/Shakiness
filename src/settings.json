@@ -1,8 +1,11 @@
 {
-  "model": "C3D",
+  "model": "preC3D",
+  "saved_model": "/036-5.027.hdf5",
+  "model_type": "classification",
+  "features_dim": 8192,
   "nb_samples": 500,
   "percent_of_test": 0.10,
-  "batch_size": 10,
+  "batch_size": 5,
   "nb_epochs": 1000,
   "root":{
       "Windows": "D:/Project/shakiness/",
@@ -12,7 +15,7 @@
       "raw_dir": "data/video/raw/",
       "processed_dir": "data/video/processed-112/",
       "frames_path": "data/frames.npy",
-      "image_mode": "GRAY",
+      "image_mode": "COLOR",
       "max_frame": 300,
       "min_frame": 200,
       "nb_frames_of_clip": 16,

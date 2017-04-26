@@ -82,9 +82,5 @@ class C3D(metaclass=utilities.singleton.SingletonMetaClass):
         model.add(BatchNormalization())
         model.add(Activation('relu'))
         model.add(Dropout(0.2))
-        model.add(Dense(1))
-        model.add(Activation('sigmoid'))
-        model.add(Dense(1, use_bias=False, kernel_initializer=(Constant(value=100))))
-        model.layers[-1].trainable=False
 
         return model

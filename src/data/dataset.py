@@ -4,6 +4,7 @@ import os
 import pickle
 import random
 
+from keras.utils import to_categorical
 import numpy as np
 
 import utilities
@@ -75,7 +76,7 @@ class Dataset(object):
     image_mode = None
 
     def __init__(self, nb_videos, videos_description, scores_xlsx,
-                 percent_of_test, preprocess=False):
+                 percent_of_test, model_type, preprocess=False):
         self.nb_videos = nb_videos
         self.width = videos_description['resize_width']
         self.height = videos_description['resize_height']
@@ -83,6 +84,8 @@ class Dataset(object):
         self.overlap = videos_description['overlap']
         self.gap = videos_description['gap']
         self.image_mode = IMAGE_MODES[videos_description['image_mode']]
+        assert model_type == 'classification' or model_type == 'regression'
+        self.model_type = model_type
 
         print('Loading scores file.')
         scores = utilities.xlsx.extract_cells(
@@ -155,8 +158,10 @@ class Dataset(object):
         assert len(test_videos) == self.nb_test
         assert len(train_videos) == self.nb_train
         assert len(test_videos)+len(train_videos) == len(self.videos)
-        self.nb_train_buckets = [min(1.0, self.nb_train_buckets[len(self.nb_train_buckets)-1]/x) for x in self.nb_train_buckets]
-        utilities.draw.draw([self.nb_train_buckets])
+        print(self.nb_train_buckets)
+        self.nb_train_buckets = [self.nb_train_buckets[len(self.nb_train_buckets)-1]/x for x in self.nb_train_buckets]
+        print(self.nb_train_buckets)
+        #utilities.draw.draw([self.nb_train_buckets])
 
         self.video_queues['test'] = VideoQueue(test_videos)
         self.nb_samples['test'] = self.get_nb_samples(
@@ -171,27 +176,46 @@ class Dataset(object):
 
     def get_nb_samples(self, videos):
         nb_samples = 0
-        tmp = [0,0,0,0,0,0,0,0,0,0,0]
+        tmp = [0,0,0,0,0,0,0,0,0,0]
         for video in videos:
+            factor = self.nb_train_buckets[int(video[1]/10)]
             nb_frames = self.frames[video[0]]
             nb_frames = len(range(0, nb_frames, 1+self.gap))
-            nb_frames = nb_frames - (nb_frames % self.clips) - 1
-            stride = int(self.clips - self.clips * self.overlap)
+            if factor > 1.0:
+                stride = round(self.clips - self.clips * (1.0 - 1.0 / factor))
+            else:
+                stride = round(self.clips - self.clips * self.overlap)
             stride = 1 if stride == 0 else stride
-            nb_samples += round(len(range(0, nb_frames, stride))*self.nb_train_buckets[int(video[1]/10)])
-            tmp[int(video[1]/10)] += round(len(range(0, nb_frames, stride))*self.nb_train_buckets[int(video[1]/10)])
+            nb = 0
+            for i in range(0, nb_frames, stride):
+                if i + self.clips > nb_frames:
+                    break
+                nb = nb + 1
+            if factor < 1.0:
+                nb = round(nb * factor)
+            nb_samples += nb
+            tmp[int(video[1]/10)] += nb
         print(tmp)
-        utilities.draw.draw([tmp])
+        #utilities.draw.draw([tmp])
         return nb_samples
 
-    def load_samples_from_video(self, video, cut=False):
-        data = utilities.video.load_video_from_images(
-            video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
-        if cut==True:
-            index = np.arange(data.shape[0])
-            np.random.shuffle(index)
-            index = index[:round(index.shape[0]*self.nb_train_buckets[int(video[1]/10)])]
-            data = data[index]
+    def load_samples_from_video(self, video, cut):
+        if cut == True:
+            factor = self.nb_train_buckets[int(video[1]/10)]
+            if factor > 1.0:
+                data = utilities.video.load_video_from_images(
+                    video[0], clips=self.clips, overlap=(1.0-1.0/factor), mode=self.image_mode, gap=self.gap)
+            else:
+                data = utilities.video.load_video_from_images(
+                    video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
+                index = np.arange(data.shape[0])
+                #np.random.shuffle(index)
+                index = index[:round(index.shape[0] * factor)]
+                data = data[index]
+        else:
+            data = utilities.video.load_video_from_images(
+                video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=self.gap)
+
         return data, np.full((data.shape[0]), video[1], dtype=np.float32)
 
     def generator(self, video_queue, nb, cut):
@@ -199,8 +223,10 @@ class Dataset(object):
         while True:
             while video_queue.nb_buffer < nb:
                 data, scores = self.load_samples_from_video(
-                    video_queue.get_video()
+                    video_queue.get_video(), cut
                 )
                 video_queue.append_samples(data, scores)
             x, y = video_queue.get_samples(nb)
+            if self.model_type == 'classification':
+                y = to_categorical(np.round(y), num_classes=101)
             yield (x, y)

@@ -23,19 +23,21 @@ if __name__ == '__main__':
             Settings().videos_description['resize_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
-        saved_model=Settings().models_dir + Settings().model + '/859-5.150.hdf5'
+        saved_model=Settings().models_dir + Settings().model + Settings().saved_model,
+        model_type=Settings().model_type
     )
 
-    svr = MySVR(saved_svr=Settings().svr['file_path'])
+    svr = MySVR(Settings().features_dim, saved_svr=Settings().svr['file_path'])
 
     dataset = Dataset(
         Settings().nb_samples,
         Settings().videos_description,
         Settings().scores_xlsx,
         Settings().percent_of_test,
+        Settings().model_type
     )
 
     validator = Validator(model_proxy, dataset, svr)
 
     validator.validate(FLAGS.witch, 'test', 5)
-    validator.validate(FLAGS.witch, 'train', 5)
+    #validator.validate(FLAGS.witch, 'train', 5)

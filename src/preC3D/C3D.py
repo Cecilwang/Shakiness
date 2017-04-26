@@ -1,11 +1,12 @@
 # Author: Cecil Wang (cecilwang@126.com)
 
+from keras.initializers import Constant
 from keras.layers import Activation, Dense, Flatten, Dropout
 from keras.layers.convolutional import Convolution3D, MaxPooling3D
 from keras.layers.normalization import BatchNormalization
 from keras.models import Sequential
 
-class preC3D():
+class C3D():
 
     def bn(self, layers, axis=-1):
         return Activation('relu')(

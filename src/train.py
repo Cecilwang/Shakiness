@@ -27,7 +27,7 @@ def train_model(model_proxy, dataset):
     )
 
 def train_svr(model_proxy, dataset):
-    svr = MySVR()
+    svr = MySVR(Settings().features_dim)
     svr.fit(model_proxy, dataset)
     svr.save(Settings().svr['file_path'])
 
@@ -41,7 +41,8 @@ if __name__ == '__main__':
             Settings().videos_description['resize_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
-        saved_model=Settings().models_dir + Settings().model + '/859-5.150.hdf5'
+        saved_model=Settings().models_dir + Settings().model + Settings().saved_model,
+        model_type=Settings().model_type
     )
 
     dataset = Dataset(
@@ -49,6 +50,7 @@ if __name__ == '__main__':
         Settings().videos_description,
         Settings().scores_xlsx,
         Settings().percent_of_test,
+        Settings().model_type
         #True
     )
 

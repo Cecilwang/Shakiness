@@ -45,7 +45,7 @@ class Validator(object):
             y.append(video[1])
         x = np.array(x)
         y = np.array(y)
-        utilities.draw.draw([x,y])
+        #utilities.draw.draw([x,y])
 
         print('SROCC : ' + str(self.SROCC(x, y)))
         print('ACC : ' + str(self.accuracy(x, y, delta)))

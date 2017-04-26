@@ -50,11 +50,12 @@ def get_nb_clips(filepath, clips, overlap=0.0):
 
 def clips_video(video_data, clips, overlap):
     nb_frames = len(video_data)
-    nb_frames = nb_frames - (nb_frames % clips) - 1
-    stride = int(clips - clips * overlap)
+    stride = round(clips - clips * overlap)
     stride = 1 if stride == 0 else stride
     clips_data = []
     for i in range(0, nb_frames, stride):
+        if i + clips > nb_frames:
+            break
         clips_data.append(video_data[i:(i+clips), :, :, :])
     clips_data = np.array(clips_data).astype(np.float32)
     return clips_data

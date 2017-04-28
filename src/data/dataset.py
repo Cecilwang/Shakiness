@@ -240,7 +240,7 @@ class Dataset(object):
             data = data[:, index, :, :, :, :]
 
         sp = data.shape
-        data.reshape(sp[0] * sp[1], sp[2], sp[3], sp[4], sp[5])
+        data = data.reshape(sp[0] * sp[1], sp[2], sp[3], sp[4], sp[5])
         scores = np.full((data.shape[0]), video[1], dtype=np.float32)
         weights = np.full((data.shape[0]), factor, dtype=np.float32)
         return data, scores, weights

@@ -46,8 +46,8 @@ class MySVR(object):
         w_a = np.array([])
         videos = dataset.video_queues['train'].videos
         for video in videos:
-            print(video[0])
-            data, scores, ws = dataset.load_samples_from_video(video, cut=False)
+            #print(video[0])
+            data, scores, ws = dataset.load_samples_from_video(video, balance=False)
             features = np.array([]).reshape(0, self.dim)
             while data.shape[0] > 0:
                 tail = min(data.shape[0], 20)

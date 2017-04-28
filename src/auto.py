@@ -19,8 +19,8 @@ def run(model, dataset):
         Settings().model,
         (
             Settings().videos_description['nb_frames_of_clip'],
-            Settings().videos_description['resize_height'],
-            Settings().videos_description['resize_width'],
+            Settings().videos_description['crop_height'],
+            Settings().videos_description['crop_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
         saved_model=Settings().models_dir + Settings().model + '/' + model,

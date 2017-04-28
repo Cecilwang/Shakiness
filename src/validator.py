@@ -62,3 +62,5 @@ class Validator(object):
         #utilities.draw.draw([x_a,y])
         print('SROCC : ' + str(self.SROCC(x_a, y)))
         print('ACC : ' + str(self.accuracy(x_a, y, delta)))
+
+        return(self.SROCC(x, y), self.SROCC(x_a, y))

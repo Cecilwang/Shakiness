@@ -11,9 +11,6 @@ from svr import MySVR
 from trainer import Trainer
 from validator import Validator
 
-max_val = 0
-name = 'None'
-
 def run(model, dataset):
     model_proxy = ModelProxy(
         Settings().model,
@@ -33,10 +30,8 @@ def run(model, dataset):
 
     print(model)
     validator = Validator(model_proxy, dataset, svr)
-    s = max(validator.validate('svr', 'test', 5))
-    if max_val < s:
-        max_val = s
-        name = model
+    return max(validator.validate('svr', 'test', 5))
+
 
 
 if __name__ == '__main__':
@@ -50,7 +45,11 @@ if __name__ == '__main__':
     )
 
     models = os.listdir(Settings().models_dir + Settings().model)
+    max_val = 0
     for model in models:
-        run(model, dataset)
+        s = run(model, dataset)
+        if max_val < s:
+            max_val = s
+            name = model
     print(name)
     print(max_val)

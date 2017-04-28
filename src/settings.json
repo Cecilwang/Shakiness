@@ -1,6 +1,6 @@
 {
   "model": "C3D",
-  "saved_model": "/989-4.551.hdf5",
+  "saved_model": "/1191-11.545.hdf5",
   "model_type": "regression",
   "features_dim": 4096,
   "nb_samples": 500,
@@ -13,8 +13,8 @@
   },
   "videos_description": {
       "raw_dir": "data/video/raw/",
-      "processed_dir": "data/video/processed-112/",
-      "frames_path": "data/frames.npy",
+      "processed_dir": "data/video/processed-crop/",
+      "detail_path": "data/detail.npy",
       "image_mode": "GRAY",
       "max_frame": 300,
       "min_frame": 200,
@@ -22,7 +22,14 @@
       "resize_height": 112,
       "resize_width": 112,
       "overlap": 0.0,
-      "gap": 1
+      "gap": 0,
+      "crop_height": 200,
+      "crop_width": 300,
+      "video_size":{
+          "1":[622,1104],
+          "2":[1080, 1920],
+          "3":[540, 1280]
+      }
   },
   "scores_xlsx": {
       "file_path": "data/scores.xlsx",

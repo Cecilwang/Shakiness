@@ -67,19 +67,20 @@ class Dataset(object):
     clips = None
     overlap = None
     gap = None
-    nb_train_buckets = []
+    image_mode = None
+    model_type = None
+
+    balance = None
     videos = []
     video_queues = dict()
-    frames = None
+    detail = None
     nb_samples = dict()
-
-    image_mode = None
 
     def __init__(self, nb_videos, videos_description, scores_xlsx,
                  percent_of_test, model_type, preprocess=False):
         self.nb_videos = nb_videos
-        self.width = videos_description['resize_width']
-        self.height = videos_description['resize_height']
+        self.width = videos_description['crop_width']
+        self.height = videos_description['crop_height']
         self.clips = videos_description['nb_frames_of_clip']
         self.overlap = videos_description['overlap']
         self.gap = videos_description['gap']
@@ -99,7 +100,7 @@ class Dataset(object):
             self.preprocess(
                 videos_description['raw_dir'],
                 videos_description['processed_dir'],
-                videos_description['frames_path']
+                videos_description['detail_path']
             )
         else:
             print('Using processed video data.')
@@ -114,34 +115,53 @@ class Dataset(object):
             self.videos.append((filepaths[i], scores[i]))
         assert self.nb_videos == len(self.videos)
 
-        print('Loading frames file.')
-        self.frames = pickle.load(open(videos_description['frames_path'], 'rb'))
-        assert self.nb_videos == len(self.frames)
+        print('Loading detail file.')
+        self.detail = pickle.load(open(videos_description['detail_path'], 'rb'))
+        assert self.nb_videos == len(self.detail)
 
         self.split_set(percent_of_test)
 
-    def preprocess(self, src_dir, dst_root_dir, frames_file):
+        self.balance_train()
+
+        self.nb_samples['test'] = self.get_nb_samples(
+            self.video_queues['test'].videos, balance=False
+        )
+
+        self.nb_samples['train'] = self.get_nb_samples(
+            self.video_queues['train'].videos, balance=True
+        )
+
+    def balance_train(self):
+        self.balance = [0 for i in range(10)]
+        videos = self.video_queues['train'].videos
+        for video in videos:
+            self.balance[int(video[1]/10)] += self.detail[video[0]]['crops']
+        self.balance = [min(10, self.balance[9]/x) for x in self.balance]
+        print('balance', self.balance)
+
+    def preprocess(self, src_dir, dst_root_dir, detail_file):
         print('Preprocessing videos.')
         filepaths = utilities.file.ls_sorted_dir(src_dir)
         assert self.nb_videos == len(filepaths)
-        frames = dict()
+        detail = dict()
         for filepath in filepaths:
             filename = os.path.basename(filepath)
             dst_dir = dst_root_dir + os.path.splitext(filename)[0]
-            nb_frames = utilities.video.video2images(
+            nb_frames, nb_crops = utilities.video.video2images(
                 filepath,
                 dst_dir=dst_dir + '/',
-                size=(self.width, self.height),
+                gray=True,
+                crop=[self.height, self.width]
             )
-            frames[dst_dir] = nb_frames
-        pickle.dump(frames, open(frames_file, 'wb'))
+            detail[dst_dir] = {'frames':nb_frames, 'crops':nb_crops}
+        pickle.dump(detail, open(detail_file, 'wb'))
 
     def split_set(self, percent_of_test=0.0):
         #random.shuffle(self.videos)
         self.nb_test = 0
         self.nb_train = 0
 
-        video_buckets = [[] for i in range(11)]
+        video_buckets = [[] for i in range(10)]
         for video in self.videos:
             video_buckets[int(video[1]/10)].append(video)
 
@@ -150,88 +170,90 @@ class Dataset(object):
         for bucket in video_buckets:
             if len(bucket)==0: continue
             nb = max(1, round(len(bucket)*percent_of_test))
+            nb = min(nb, len(bucket)-1)
             self.nb_test += nb
             self.nb_train += len(bucket)-nb
-            self.nb_train_buckets.append(len(bucket)-nb)
             test_videos += bucket[:nb]
             train_videos += bucket[nb:]
         assert len(test_videos) == self.nb_test
         assert len(train_videos) == self.nb_train
         assert len(test_videos)+len(train_videos) == len(self.videos)
-        print("nb buckets")
-        print(self.nb_train_buckets)
-        self.nb_train_buckets = [self.nb_train_buckets[len(self.nb_train_buckets)-1]/x for x in self.nb_train_buckets]
-        print(self.nb_train_buckets)
-        #utilities.draw.draw([self.nb_train_buckets])
 
         self.video_queues['test'] = VideoQueue(test_videos)
-        self.nb_samples['test'] = self.get_nb_samples(
-            self.video_queues['test'].videos
-        )
         random.shuffle(train_videos)
         self.video_queues['train'] = VideoQueue(train_videos)
-        self.nb_samples['train'] = self.get_nb_samples(
-            self.video_queues['train'].videos
-        )
 
-
-    def get_nb_samples(self, videos):
+    def get_nb_samples(self, videos, balance):
         nb_samples = 0
         tmp = [0,0,0,0,0,0,0,0,0,0]
         tmp_t = [0,0,0,0,0,0,0,0,0,0]
         for video in videos:
-            factor = self.nb_train_buckets[int(video[1]/10)]
-            nb_frames = self.frames[video[0]]
+            factor = self.balance[int(video[1]/10)]
+            nb_frames = self.detail[video[0]]['frames']
             nb_frames = len(range(0, nb_frames, 1+self.gap))
-            if factor > 1.0:
-                stride = round(self.clips - self.clips * (1.0 - 1.0 / factor))
-            else:
-                stride = round(self.clips - self.clips * self.overlap)
+            overlap = self.overlap
+            if balance and factor > 1.0:
+                overlap = (1.0 - 1.0 / factor)
+            stride = round(self.clips - self.clips * overlap)
             stride = 1 if stride == 0 else stride
             nb = 0
             for i in range(0, nb_frames, stride):
                 if i + self.clips > nb_frames:
                     break
                 nb = nb + 1
-            if factor < 1.0:
+            if balance and factor < 1.0:
                 nb = round(nb * factor)
+            nb *= self.detail[video[0]]['crops']
             nb_samples += nb
             tmp[int(video[1]/10)] += nb
-            tmp_t[int(video[1]/10)] += 1
-        print("nb samples")
-        print(tmp_t)
-        print("balance nb samples")
-        print(tmp)
+            tmp_t[int(video[1]/10)] += self.detail[video[0]]['crops']
+        print("nb videos", tmp_t)
+        print("balance nb samples", tmp)
         #utilities.draw.draw([tmp])
         return nb_samples
 
-    def load_samples_from_video(self, video, cut, gap=1):
-        factor = self.nb_train_buckets[int(video[1]/10)]
-        if cut == True:
-            if factor > 1.0:
-                data = utilities.video.load_video_from_images(
-                    video[0], clips=self.clips, overlap=(1.0-1.0/factor), mode=self.image_mode, gap=gap)
-            else:
-                data = utilities.video.load_video_from_images(
-                    video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=gap)
-                index = np.arange(data.shape[0])
-                #np.random.shuffle(index)
-                index = index[:round(index.shape[0] * factor)]
-                data = data[index]
-        else:
-            data = utilities.video.load_video_from_images(
-                video[0], clips=self.clips, overlap=self.overlap, mode=self.image_mode, gap=gap)
-        return data, np.full((data.shape[0]), video[1], dtype=np.float32), np.full((data.shape[0]), factor, dtype=np.float32)
+    def load_samples_from_video(self, video, balance,):
+        factor = self.balance[int(video[1]/10)]
+        overlap = self.overlap
 
-    def generator(self, video_queue, nb, cut):
+        # Up sample
+        if balance == True and factor > 1.0:
+            overlap = (1.0-1.0/factor)
+
+        data = utilities.video.load_video_from_images(
+            video[0]+'/',
+            self.detail[video[0]]['frames'],
+            self.detail[video[0]]['crops'],
+            crop=[self.height, self.width],
+            mode=self.image_mode,
+            clips=self.clips,
+            overlap=overlap,
+            gap=self.gap,
+        )
+        assert data.shape[0] == self.detail[video[0]]['crops']
+
+        # Down sample
+        if balance == True and factor < 1.0:
+            index = np.arange(data.shape[1])
+            #np.random.shuffle(index)
+            index = index[:round(index.shape[0] * factor)]
+            data = data[:, index, :, :, :, :]
+
+        sp = data.shape
+        data.reshape(sp[0] * sp[1], sp[2], sp[3], sp[4], sp[5])
+        scores = np.full((data.shape[0]), video[1], dtype=np.float32)
+        weights = np.full((data.shape[0]), factor, dtype=np.float32)
+        return data, scores, weights
+
+    def generator(self, video_queue, batch, balance):
         video_queue = self.video_queues[video_queue]
         while True:
-            while video_queue.nb_buffer < nb:
+            while video_queue.nb_buffer < batch:
                 data, scores, _ = self.load_samples_from_video(
-                    video_queue.get_video(), cut
+                    video_queue.get_video(), balance
                 )
                 video_queue.append_samples(data, scores)
-            x, y = video_queue.get_samples(nb)
+            x, y = video_queue.get_samples(batch)
             if self.model_type == 'classification':
                 y = to_categorical(np.round(y), num_classes=101)
             yield (x, y)

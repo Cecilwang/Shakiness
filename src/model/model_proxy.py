@@ -68,6 +68,6 @@ class ModelProxy(object):
         if model_type=='classification':
             self.classification_compile()
 
-        self.model.summary()
+        #self.model.summary()
 
-        print('Model has been compiled.')
+        #print('Model has been compiled.')

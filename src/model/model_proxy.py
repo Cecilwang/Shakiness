@@ -40,7 +40,7 @@ class ModelProxy(object):
         self.input_shape = input_shape
 
         if saved_model is not None:
-            print("Loading model %s." % saved_model)
+            #print("Loading model %s." % saved_model)
             self.model = load_model(saved_model)
         elif name == 'C3D':
             print("Create C3D model.")
@@ -68,6 +68,6 @@ class ModelProxy(object):
         if model_type=='classification':
             self.classification_compile()
 
-        self.model.summary()
+        #self.model.summary()
 
-        print('Model has been compiled.')
+        #print('Model has been compiled.')

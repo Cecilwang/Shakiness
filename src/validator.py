@@ -32,7 +32,7 @@ class Validator(object):
         x_a = []
         y = []
         for video in videos:
-            print(video[0])
+            #print(video[0])
             data, _, _ = self.dataset.load_samples_from_video(video, cut=False)
             if tool == 'model':
                 scores = self.model_proxy.model.predict(data, batch_size=data.shape[0], verbose=1)
@@ -50,15 +50,15 @@ class Validator(object):
         x = np.array(x)
         x_a = np.array(x_a)
         y = np.array(y)
-        print(x)
-        print(y)
-        utilities.draw.draw([x,y])
+        #print(x)
+        #print(y)
+        #utilities.draw.draw([x,y])
 
         print('SROCC : ' + str(self.SROCC(x, y)))
         print('ACC : ' + str(self.accuracy(x, y, delta)))
 
-        print(x_a)
-        print(y)
-        utilities.draw.draw([x_a,y])
+        #print(x_a)
+        #print(y)
+        #utilities.draw.draw([x_a,y])
         print('SROCC : ' + str(self.SROCC(x_a, y)))
         print('ACC : ' + str(self.accuracy(x_a, y, delta)))

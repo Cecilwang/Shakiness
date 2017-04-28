@@ -45,7 +45,7 @@ if __name__ == '__main__':
         Settings().videos_description,
         Settings().scores_xlsx,
         Settings().percent_of_test,
-        Settings().model_type
+        Settings().model_type,
         #True
     )
 

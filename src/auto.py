@@ -1,7 +1,9 @@
 # Author: Cecil Wang (cecilwang@126.com)
 
+import gc
 import os
 
+from keras import backend as K
 import tensorflow as tf
 
 from settings import Settings
@@ -11,13 +13,14 @@ from svr import MySVR
 from trainer import Trainer
 from validator import Validator
 
+
 def run(model, dataset):
     model_proxy = ModelProxy(
         Settings().model,
         (
             Settings().videos_description['nb_frames_of_clip'],
-            Settings().videos_description['crop_height'],
-            Settings().videos_description['crop_width'],
+            Settings().videos_description['resize_height'],
+            Settings().videos_description['resize_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
         saved_model=Settings().models_dir + Settings().model + '/' + model,
@@ -30,8 +33,14 @@ def run(model, dataset):
 
     print(model)
     validator = Validator(model_proxy, dataset, svr)
-    return max(validator.validate('svr', 'test', 5))
+    max_val = max(validator.validate('svr', 'test', 5))
 
+    K.clear_session()
+    del model_proxy
+    del validator
+    del svr
+    gc.collect()
+    return max_val
 
 
 if __name__ == '__main__':
@@ -40,7 +49,7 @@ if __name__ == '__main__':
         Settings().videos_description,
         Settings().scores_xlsx,
         Settings().percent_of_test,
-        Settings().model_type
+        Settings().model_type,
         #True
     )
 

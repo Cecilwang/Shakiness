@@ -33,14 +33,14 @@ def run(model, dataset):
 
     print(model)
     validator = Validator(model_proxy, dataset, svr)
-    max_val = max(validator.validate('svr', 'test', 5))
+    srocc = validator.validate('svr', 'test', 5)
 
     K.clear_session()
     del model_proxy
     del validator
     del svr
     gc.collect()
-    return max_val
+    return srocc
 
 
 if __name__ == '__main__':

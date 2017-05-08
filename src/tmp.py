@@ -44,7 +44,6 @@ if __name__ == '__main__':
     for video in videos:
         print(video[0])
         data, _, _ = dataset.load_samples_from_video(video, balance=False)
-        print(data.shape)
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
                     image = data[i,j,:,:,:]

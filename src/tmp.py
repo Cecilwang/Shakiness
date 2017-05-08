@@ -37,7 +37,6 @@ if __name__ == '__main__':
     )
     print(dataset.nb_samples)
 
-    '''
     import time
     t = time.time()
     nb = 0
@@ -45,15 +44,10 @@ if __name__ == '__main__':
     for video in videos:
         print(video[0])
         data, _, _ = dataset.load_samples_from_video(video, balance=False)
-        data.astype(np.float32)
+        print(data.shape)
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
-                for k in range(data.shape[2]):
-                    image = data[i,j,k,:,:,:]
-                    print(image.shape)
-                    cv2.imshow('haha', image)
-                    cv2.waitKey(0)
-        nb += data.shape[0]*data.shape[1]
+                    image = data[i,j,:,:,:]
+        nb += data.shape[0]
     print(nb)
     print(time.time()-t)
-    '''

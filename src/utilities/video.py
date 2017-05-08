@@ -106,9 +106,12 @@ def load_video_from_images(video_dir, nb_frames, nb_crops, crop, mode=0, size=No
     for frame in frames:
         data_t.append(crop_image(np.expand_dims(frame, 2), crop[0], crop[1]))
     data_t = np.transpose(data_t, (1, 0, 2, 3, 4))
-    for i in range(data_t.shape[0]):
-        data.append(clips_video(data_t[i,:,:,:,:], clips, overlap))
-    return np.array(data)
+    index = np.arange(data_t.shape[0])
+    np.random.shuffle(index)
+    for i in range(nb_crops):
+        data.append(clips_video(data_t[index[i],:,:,:,:], clips, overlap))
+    data = np.array(data)
+    return (data)
 
 
 def crop_image(image, h_size, w_size):
@@ -127,6 +130,9 @@ def crop_image(image, h_size, w_size):
             y = h_boundary + i * h_size
             x = w_boundary + j * w_size
             images.append(image[y:y+h_size, x:x+w_size, :])
+    #y = h_boundary + h_nb//2*h_size
+    #x = w_boundary + w_nb//2*w_size
+    #images.append(image[y:y+h_size, x:x+w_size, :])
 
     return images
 
@@ -153,7 +159,7 @@ def video2images(src_file, dst_dir, size=None, gray=False, crop=None):
             frame = cv2.resize(frame, size)
         if gray == True:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        cv2.imwrite(dst_dir+str(nb_frames)+'.png', frame)
+        #cv2.imwrite(dst_dir+str(nb_frames)+'.png', frame)
         nb_frames += 1
     cap.release()
     return nb_frames, nb_crops

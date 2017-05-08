@@ -1,12 +1,13 @@
 {
   "model": "C3D",
-  "saved_model": "/1191-11.545.hdf5",
+  "saved_model": "/013-20.937.hdf5",
   "model_type": "regression",
   "features_dim": 4096,
   "nb_samples": 500,
   "percent_of_test": 0.10,
-  "batch_size": 5,
+  "batch_size":15,
   "nb_epochs": 1000,
+  "init_epoch": 76,
   "root":{
       "Windows": "D:/Project/shakiness/",
       "Linux": "/home/wsx/shakiness/"
@@ -23,8 +24,9 @@
       "resize_width": 112,
       "overlap": 0.0,
       "gap": 0,
-      "crop_height": 200,
-      "crop_width": 300,
+      "crop_height": 112,
+      "crop_width": 112,
+      "random_crop": 1,
       "video_size":{
           "1":[622,1104],
           "2":[1080, 1920],

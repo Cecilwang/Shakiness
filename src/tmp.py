@@ -33,7 +33,7 @@ if __name__ == '__main__':
         Settings().scores_xlsx,
         Settings().percent_of_test,
         Settings().model_type,
-        #True
+        True
     )
     print(dataset.nb_samples)
 

@@ -10,7 +10,7 @@
   "init_epoch": 76,
   "root":{
       "Windows": "D:/Project/shakiness/",
-      "Linux": "/home/wsx/shakiness/"
+      "Linux": "/disk/wsx/shakiness/"
   },
   "videos_description": {
       "raw_dir": "data/video/raw/",

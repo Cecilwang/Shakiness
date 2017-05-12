@@ -1,13 +1,13 @@
 {
   "model": "C3D",
-  "saved_model": "/013-20.937.hdf5",
+  "saved_model": "/194-29.063.hdf5",
   "model_type": "regression",
   "features_dim": 4096,
   "nb_samples": 500,
   "percent_of_test": 0.10,
-  "batch_size":15,
+  "batch_size": 44,
   "nb_epochs": 1000,
-  "init_epoch": 76,
+  "init_epoch": 200,
   "root":{
       "Windows": "D:/Project/shakiness/",
       "Linux": "/disk/wsx/shakiness/"

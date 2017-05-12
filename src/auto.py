@@ -60,5 +60,5 @@ if __name__ == '__main__':
         if max_val < s:
             max_val = s
             name = model
-    print(name)
-    print(max_val)
+        print(name)
+        print(max_val)

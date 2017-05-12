@@ -49,7 +49,7 @@ class MySVR(object):
             data, scores, ws = dataset.load_samples_from_video(video, balance=False)
             features = np.array([]).reshape(0, self.dim)
             while data.shape[0] > 0:
-                tail = min(data.shape[0], 20)
+                tail = min(data.shape[0], 40)
                 data_t = data[:tail, :, :, :]
                 data = data[tail:data.shape[0], :, :, :]
                 features = np.vstack([model_proxy.features([data_t, 0])[0], features])
@@ -67,7 +67,7 @@ class MySVR(object):
     def predict(self, model_proxy, data):
         features = np.array([]).reshape(0, self.dim)
         while data.shape[0] > 0:
-            tail = min(data.shape[0], 20)
+            tail = min(data.shape[0], 40)
             data_t = data[:tail, :, :, :]
             data = data[tail:data.shape[0], :, :, :]
             features = np.vstack([model_proxy.features([data_t, 0])[0], features])

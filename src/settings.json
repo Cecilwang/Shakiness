@@ -5,7 +5,7 @@
   "features_dim": 4096,
   "nb_samples": 500,
   "percent_of_test": 0.10,
-  "batch_size": 44,
+  "batch_size": 22,
   "nb_epochs": 1000,
   "init_epoch": 200,
   "root":{

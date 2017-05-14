@@ -1,5 +1,6 @@
 # Author: Cecil Wang (cecilwang@126.com)
 
+import tensorflow as tf
 from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping, CSVLogger
 import time
 
@@ -57,11 +58,12 @@ class Trainer(object):
                 validation_steps=self.dataset.nb_samples['test']//batch_size,
             )
         else:
-            self.model_proxy.model.fit_generator(
-                generator=self.dataset.generator('train', batch_size, balance=True),
-                steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
-                epochs=nb_epochs,
-                verbose=2,
-                callbacks=self.get_callbacks(callbacks_set),
-                initial_epoch=initial_epoch,
-            )
+            with tf.device('/gpu:0'):
+                self.model_proxy.model.fit_generator(
+                    generator=self.dataset.generator('train', batch_size, balance=True),
+                    steps_per_epoch=self.dataset.nb_samples['train']//batch_size,
+                    epochs=nb_epochs,
+                    verbose=2,
+                    callbacks=self.get_callbacks(callbacks_set),
+                    initial_epoch=initial_epoch,
+                )

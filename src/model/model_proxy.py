@@ -64,13 +64,13 @@ class ModelProxy(object):
             if model_type == 'classification':
                 self.classification_layer()
 
-        self.model = make_parallel(self.model, 2)
+        #self.model = make_parallel(self.model, 2)
         
         if model_type=='regression':
             self.regression_compile()
         if model_type=='classification':
             self.classification_compile()
 
-        #self.model.summary()
+        self.model.summary()
 
         #print('Model has been compiled.')

@@ -2,6 +2,7 @@
 
 import gc
 import os
+import sys
 
 from keras import backend as K
 import tensorflow as tf
@@ -32,6 +33,8 @@ def run(model, dataset):
     svr.save(Settings().svr['file_path']+'_'+model)
 
     print(model)
+    sys.stdout.flush()
+    
     validator = Validator(model_proxy, dataset, svr)
     srocc = validator.validate('svr', 'test', 5)
 
@@ -62,3 +65,4 @@ if __name__ == '__main__':
             name = model
         print(name)
         print(max_val)
+        sys.stdout.flush()

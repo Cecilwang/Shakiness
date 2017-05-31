@@ -159,7 +159,7 @@ def video2images(src_file, dst_dir, size=None, gray=False, crop=None):
             frame = cv2.resize(frame, size)
         if gray == True:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        #cv2.imwrite(dst_dir+str(nb_frames)+'.png', frame)
+        cv2.imwrite(dst_dir+str(nb_frames)+'.png', frame)
         nb_frames += 1
     cap.release()
     return nb_frames, nb_crops

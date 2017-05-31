@@ -100,9 +100,9 @@ def load_video_from_images(video_dir, nb_frames, nb_crops, crop, mode=0, size=No
     data = []
     data_t = []
     if size == None:
-        frames = [cv2.imread(video_dir+str(i)+'.png', mode) for i in range(nb_frames)]
+        frames = [cv2.imread(video_dir+str(i)+'.png', mode) for i in range(0,nb_frames,gap)]
     else:
-        frames = [cv2.resize(cv2.imread(video_dir+str(i)+'.png', mode), size) for i in range(nb_frames)]
+        frames = [cv2.resize(cv2.imread(video_dir+str(i)+'.png', mode), size) for i in range(0, nb_frames, gap)]
     for frame in frames:
         data_t.append(crop_image(np.expand_dims(frame, 2), crop[0], crop[1]))
     data_t = np.transpose(data_t, (1, 0, 2, 3, 4))

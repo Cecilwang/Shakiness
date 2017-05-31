@@ -1,6 +1,6 @@
 {
   "model": "C3D",
-  "saved_model": "/000-37.260.hdf5",
+  "saved_model": "/../85.39/039-43.541.hdf5",
   "model_type": "regression",
   "features_dim": 4096,
   "nb_samples": 500,
@@ -23,7 +23,7 @@
       "resize_height": 112,
       "resize_width": 112,
       "overlap": 0.0,
-      "gap": 0,
+      "gap": 1,
       "crop_height": 112,
       "crop_width": 112,
       "random_crop": 1,
@@ -44,6 +44,6 @@
   "models_dir": "model/",
   "preC3D_path": "data/preC3D/preC3D.model",
   "svr": {
-      "file_path": "model/svr/svr.npy_000-37.260.hdf5"
+      "file_path": "model/svr/svr.npy_000-37.260.hdf5_039-43.541.hdf5"
   }
 }

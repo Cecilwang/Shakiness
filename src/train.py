@@ -41,7 +41,7 @@ if __name__ == '__main__':
             Settings().videos_description['crop_width'],
             3 if Settings().videos_description['image_mode'] == 'COLOR' else 1,
         ),
-        saved_model=Settings().models_dir + Settings().model + Settings().saved_model,
+        #saved_model=Settings().models_dir + Settings().model + Settings().saved_model,
         model_type=Settings().model_type
     )
 

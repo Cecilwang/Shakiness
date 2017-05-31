@@ -60,17 +60,17 @@ class C3D(metaclass=utilities.singleton.SingletonMetaClass):
         #model.add(self.conv_3d_bn(256, 3, 1))
         model.add(self.maxpool_3d(2, 2))
 
-        model.add(self.conv_3d(256, 3, 1))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        #model.add(self.conv_3d(256, 3, 1))
+        #model.add(BatchNormalization())
+        #model.add(Activation('relu'))
         #model.add(self.conv_3d_bn(512, 3, 1))
-        model.add(self.maxpool_3d(2, 2))
+        #model.add(self.maxpool_3d(2, 2))
 
-        model.add(self.conv_3d(256, 3, 1))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
+        #model.add(self.conv_3d(256, 3, 1))
+        #model.add(BatchNormalization())
+        #model.add(Activation('relu'))
         #model.add(self.conv_3d_bn(512, 3, 1))
-        model.add(self.maxpool_3d(2, 2))
+        #model.add(self.maxpool_3d(2, 2))
 
         model.add(Flatten())
 

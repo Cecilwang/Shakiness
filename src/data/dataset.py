@@ -69,6 +69,7 @@ class Dataset(object):
     gap = None
     image_mode = None
     model_type = None
+    random_crop = None
 
     balance = None
     videos = []
@@ -87,6 +88,7 @@ class Dataset(object):
         self.image_mode = IMAGE_MODES[videos_description['image_mode']]
         assert model_type == 'classification' or model_type == 'regression'
         self.model_type = model_type
+        self.random_crop = videos_description['random_crop']
 
         print('Loading scores file.')
         scores = utilities.xlsx.extract_cells(
@@ -117,6 +119,9 @@ class Dataset(object):
 
         print('Loading detail file.')
         self.detail = pickle.load(open(videos_description['detail_path'], 'rb'))
+        if self.random_crop != 0:
+            for k in self.detail.keys():
+                self.detail[k]['crops'] = self.random_crop
         assert self.nb_videos == len(self.detail)
 
         self.split_set(percent_of_test)

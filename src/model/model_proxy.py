@@ -7,6 +7,7 @@ from keras.models import load_model
 
 from model import C3D
 from model import preC3D
+from utilities.multi_gpu import make_parallel
 
 class ModelProxy(object):
 
@@ -63,11 +64,13 @@ class ModelProxy(object):
             if model_type == 'classification':
                 self.classification_layer()
 
+        #self.model = make_parallel(self.model, 2)
+        
         if model_type=='regression':
             self.regression_compile()
         if model_type=='classification':
             self.classification_compile()
 
-        #self.model.summary()
+        self.model.summary()
 
         #print('Model has been compiled.')

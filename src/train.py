@@ -22,7 +22,7 @@ def train_model(model_proxy, dataset):
         Settings().batch_size,
         Settings().nb_epochs,
         set(Settings().callbacks_set),
-        0,
+        Settings().init_epoch,
         False
     )
 
